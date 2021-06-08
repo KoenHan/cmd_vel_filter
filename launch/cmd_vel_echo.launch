@@ -4,5 +4,5 @@
         <remap from="cmd_vel" to="cmd_vel_filter"/>
     </node>
 
-    <node pkg="tsukutyare" type="cmd_vel_echo" name="cmd_vel_echo" output="screen" />
+    <node pkg="cmd_vel_filter" type="cmd_vel_echo" name="cmd_vel_echo" output="screen" />
 </launch>

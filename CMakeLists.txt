@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0.2)
-project(tsukutyare)
+project(cmd_vel_filter)
 
 find_package(catkin REQUIRED COMPONENTS
   roscpp
