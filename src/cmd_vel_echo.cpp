@@ -1,5 +1,6 @@
 #include "ros/ros.h"
 #include "geometry_msgs/Twist.h"
+#include <std_msgs/Int32.h>
 
 class CmdVelEcho {
 private:
@@ -7,13 +8,18 @@ private:
   ros::NodeHandle nh_private;
   ros::Rate loop_rate;
 
-  ros::Publisher pub = nh.advertise<geometry_msgs::Twist>("cmd_vel", 10);
+  // 他パッケージの都合上(cmd_vel -> cmd_vel_filter)の順番にしました.
+  ros::Publisher pub = nh.advertise<geometry_msgs::Twist>("cmd_vel_filter", 10);
   ros::Subscriber sub = nh.subscribe(
-      "cmd_vel_filter", 1,
+      "cmd_vel", 1,
       &CmdVelEcho::cmdVelSubCallback, this);
-    
+  ros::Subscriber area_type_pub = nh.subscribe("area_type", 1, &CmdVelEcho::areaTypeSubCallback, this);
   geometry_msgs::Twist cmd_vel_base;
   bool flag = false;
+  int area_type = 0;
+  int slowdown_area = 3;
+  double slowdown_vel = 0.2;
+
 
 public:
   CmdVelEcho(
@@ -26,15 +32,30 @@ public:
     flag = true;
   }
 
-  void start() {
-    while(ros::ok()) {
-        ros::spinOnce();
-        if(flag) {
-          geometry_msgs::Twist msg = cmd_vel_base;
-          pub.publish(msg);
-        }
+  void areaTypeSubCallback(const std_msgs::Int32::ConstPtr& msg) {
+    area_type = msg->data;
+  }
 
-        loop_rate.sleep();
+  bool isSlowDownArea() {
+    if (area_type == slowdown_area){
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  void start(double slowdown_vel) {
+    while(ros::ok()) {
+      ros::spinOnce();
+      if(flag) {
+        geometry_msgs::Twist msg = cmd_vel_base;
+        if (isSlowDownArea()){
+          msg.linear.x = slowdown_vel;
+        }
+        std::cout << "now linear.x... " << msg.linear.x << std::endl;
+        pub.publish(msg);
+      }
+      loop_rate.sleep();
     }
   };
 };
@@ -46,8 +67,11 @@ int main(int argc, char *argv[])
     ros::NodeHandle nh_private("~");
     ros::Rate loop_rate(50); // Hz
 
+    double slowdown_vel;
+    nh_private.param("slowdown_vel", slowdown_vel, 0.2);
+
     CmdVelEcho echo(nh, nh_private, loop_rate);
-    echo.start();
+    echo.start(slowdown_vel);
 
     ros::shutdown();
 

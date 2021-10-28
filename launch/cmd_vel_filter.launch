@@ -1,0 +1,9 @@
+<launch>
+    <arg name="slowdown_vel" default="0.3"/>
+
+    <node pkg="cmd_vel_filter" type="cmd_vel_echo" name="cmd_vel_echo" output="screen" >
+        <remap from="cmd_vel_filter" to="cmd_vel_filter"/>
+        <param name="slowdown_vel" value="$(arg slowdown_vel)" />
+    </node>
+
+</launch>
