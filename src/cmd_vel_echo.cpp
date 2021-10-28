@@ -50,7 +50,7 @@ public:
       if(flag) {
         geometry_msgs::Twist msg = cmd_vel_base;
         if (isSlowDownArea()){
-          msg.linear.x = slowdown_vel;
+          msg.linear.x = std::min(msg.linear.x, slowdown_vel);
         }
         std::cout << "now linear.x... " << msg.linear.x << std::endl;
         pub.publish(msg);
