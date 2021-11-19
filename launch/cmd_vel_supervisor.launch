@@ -1,0 +1,10 @@
+<launch>
+    <arg name="wait_sec_tolerance" default="0.5"/>
+    <!-- <arg name="wait_sec_tolerance" default="3.0"/> -->
+
+    <node pkg="cmd_vel_filter" type="cmd_vel_supervisor" name="cmd_vel_supervisor" output="screen" >
+        <remap from="cmd_vel/filtered" to="cmd_vel/filtered"/>
+        <param name="wait_sec_tolerance" value="$(arg wait_sec_tolerance)" />
+    </node>
+
+</launch>

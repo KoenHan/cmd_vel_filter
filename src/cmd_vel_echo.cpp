@@ -9,7 +9,7 @@ private:
   ros::Rate loop_rate;
 
   // 他パッケージの都合上(cmd_vel -> cmd_vel_filter)の順番にしました.
-  ros::Publisher pub = nh.advertise<geometry_msgs::Twist>("cmd_vel_filter", 10);
+  ros::Publisher pub = nh.advertise<geometry_msgs::Twist>("cmd_vel/filtered", 10);
   ros::Subscriber sub = nh.subscribe(
       "cmd_vel", 1,
       &CmdVelEcho::cmdVelSubCallback, this);
