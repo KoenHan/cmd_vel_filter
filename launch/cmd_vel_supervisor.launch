@@ -1,6 +1,6 @@
 <launch>
-    <arg name="wait_sec_tolerance" default="0.5"/>
-    <!-- <arg name="wait_sec_tolerance" default="3.0"/> -->
+    <!-- <arg name="wait_sec_tolerance" default="0.5"/> -->
+    <arg name="wait_sec_tolerance" default="1.5"/>
 
     <node pkg="cmd_vel_filter" type="cmd_vel_supervisor" name="cmd_vel_supervisor" output="screen" >
         <remap from="cmd_vel/filtered" to="cmd_vel/filtered"/>

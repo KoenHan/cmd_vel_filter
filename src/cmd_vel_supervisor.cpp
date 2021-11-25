@@ -21,6 +21,12 @@ public:
         nh_.param("wait_sec_tolerance", wait_sec_tolerance_, 0.5);
 
         reseted_time_ = ros::Time::now();
+        zero_twist_msg.linear.x = 0.0;
+        zero_twist_msg.linear.y = 0.0;
+        zero_twist_msg.linear.z = 0.0;
+        zero_twist_msg.angular.x = 0.0;
+        zero_twist_msg.angular.y = 0.0;
+        zero_twist_msg.angular.z = 0.0;
     }
 
     void cmdVelCallback(const geometry_msgs::Twist::ConstPtr& msg){
@@ -42,7 +48,7 @@ public:
         double elapsed_time_sec = duration.sec + duration.nsec / 1000000000.0;
         if ( elapsed_time_sec > wait_sec_tolerance_) { // 0.5秒間cmd_velが変化しない、または、0.5秒間cmd_velが送られていないとき
             // std::cout << elapsed_time_sec << std::endl;
-            publishZeroCmdVel();
+            if(!isSameTwist(last_twist_, zero_twist_msg)) publishZeroCmdVel();
             reseted_time_ = ros::Time::now();
         }
     }
@@ -65,7 +71,7 @@ public:
     void publishZeroCmdVel(){
         // 停止司令を流す
         geometry_msgs::Twist msg;
-        msg.linear.x = 0.0;
+        msg.linear.x = 0.01;
         msg.linear.y = 0.0;
         msg.linear.z = 0.0;
         msg.angular.x = 0.0;
@@ -83,6 +89,8 @@ private:
     geometry_msgs::Twist twist_{};
     ros::Time reseted_time_;
     double wait_sec_tolerance_; //cmd_velの変化をどれだけ待つか
+    geometry_msgs::Twist zero_twist_msg;
+
 };
 
 int main(int argc, char *argv[])
